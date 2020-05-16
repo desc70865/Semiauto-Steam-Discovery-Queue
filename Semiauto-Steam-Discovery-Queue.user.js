@@ -2,7 +2,7 @@
 // @name         Semiauto Steam Discovery Queue
 // @namespace    https://github.com/desc70865/Semiauto-Steam-Discovery-Queue
 // @icon         https://store.steampowered.com/favicon.ico
-// @version      0.1.2
+// @version      0.1.3
 // @description  something aid to accelerate steam discovery queue
 // @author       desc_inno
 // @match        https://store.steampowered.com/app/*
@@ -19,8 +19,8 @@
 })();
 
 function semiauto(){
-    if((/Failed to load queue/g).test(document.getElementsByTagName('html')[0].outerHTML)){ // may refresh can work better
-        backToExplore();
+    if((/Failed to load queue|502 Bad Gateway/g).test(document.getElementsByTagName('html')[0].outerHTML)){ // may refresh can work better
+        window.location.reload(); // if error, refresh the page
     }
 
     var path = window.location.pathname.split('/'),
@@ -30,12 +30,13 @@ function semiauto(){
 
     switch(path[1]) { // switch by path name
         case 'explore':
-            var queue_length = $("div#discovery_queue")[0].childNodes.length;
+            var queue_length = $("div#discovery_queue")[0].childNodes.length; // rest items in queue
             if(queue_length > 0){
-                createButton();
-                document.getElementById('next_button').addEventListener('click', function(){
+                var button = createButton();
+                button.addEventListener('click', function(){
                     var appid = document.getElementById("discovery_queue_start_link").href.match(/(?<=app\/)(\d+)/g,).toString();
                     nextAppInQueue(appid, href);
+                    // annotate after 0.1.2, consider of some Q have continuous demos
                     /*if(queue_length > 1){ // if any game behind exist
                         var next_appid = $("div#discovery_queue")[0].childNodes[1].outerHTML.match(/(?<=apps\/)\d+/g),
                             next_url = "https://store.steampowered.com/app/" + next_appid + "/";
@@ -48,7 +49,7 @@ function semiauto(){
             }
             else{
                 var tmp = $("div.discover_queue_empty_refresh_btn")[0].getElementsByTagName("span")[0].click();
-                var t4 = setTimeout(location.reload(),3000)
+                var t4 = setTimeout(window.location.reload(),3000)
             };
             break;
         case 'app':
@@ -95,7 +96,7 @@ function titleMark(){ // add prefix & suffix to title if u need
     if((/%/g).test(rate_panel[0].dataset.tooltipHtml)){ // sometimes there wont be enough reviews
         reviews_rate = rate_panel[length-1].dataset.tooltipHtml.match(/\d+(?=%)/g), // overall percentage
         total = rate_panel[length - 1].dataset.tooltipHtml.match(/\d+(?= 篇)/g); // a space here / sum of reviews
-        title[0].innerHTML = title[0].innerText + " => ("+ parseInt(reviews_rate * total / 100) + "/" + total + ") = " + reviews_rate + "%)"; // add rate to suffix
+        title[0].innerHTML = title[0].innerText + " => ("+ parseInt(reviews_rate * total / 100) + "/" + total + ") = " + reviews_rate + "%☆"; // add rate to suffix
     }
     if(flag_card == true){
         title[0].innerHTML = "📇 " + title[0].innerText; // add emoji to prefix
@@ -114,7 +115,7 @@ function titleMark(){ // add prefix & suffix to title if u need
 };
 
 function tagTest(tags, reg){ // tag detector
-    for(var i = 1; i < 6 && i < tags.length; i++){
+    for(var i = 1; i < 6 && i < tags.length; i++){ // search in top 5 tags
         if(reg.test(tags[i].innerText)){
             return true;
         }
@@ -137,11 +138,12 @@ function createButton() { // create button for nextAppInQueue at "https://store.
     buttonSpan.innerHTML = '移除当前游戏';
     buttonSpan.setAttribute('style', 'padding: 0 15% 0 15%; font-size: 15px; line-height: 64px; color: #ffcc6a; font-family: "Motiva Sans", Sans-serif; font-weight: 300;')
 
-    buttonContainerDiv.setAttribute('id', 'next_button');
+    buttonContainerDiv.setAttribute('id', 'remove_button');
     buttonContainerDiv.setAttribute('class', 'next_in_queue_content');
-    buttonContainerDiv.setAttribute('style', 'background: url(/public/images/v6/app/queue_next_btn.png) top left no-repeat; width: 144px; height: 64px; cursor: pointer; background-size: 100% 200%; margin-bottom: -26px; margin-right: -72px; margin-top: -9px; float: right;');
+    buttonContainerDiv.setAttribute('style', 'background: url(/public/images/v6/app/queue_next_btn.png) top left no-repeat; width: 144px; height: 64px; cursor: pointer; background-size: 100% 200%; margin-bottom: -26px; margin-right: 0px; margin-top: -9px; float: right;');
 
     buttonContainerDiv.appendChild(buttonSpan);
-
     document.getElementsByClassName('discovery_queue_apps')[0].getElementsByClassName('discovery_queue_static')[0].insertAdjacentHTML('afterend', buttonContainerDiv.outerHTML);
+
+    return buttonContainerDiv;
 };
