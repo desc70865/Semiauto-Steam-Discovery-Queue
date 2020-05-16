@@ -2,7 +2,7 @@
 // @name         Semiauto Steam Discovery Queue
 // @namespace    https://github.com/desc70865/Semiauto-Steam-Discovery-Queue
 // @icon         https://store.steampowered.com/favicon.ico
-// @version      0.1
+// @version      0.1.2
 // @description  something aid to accelerate steam discovery queue
 // @author       desc_inno
 // @match        https://store.steampowered.com/app/*
@@ -25,7 +25,6 @@ function semiauto(){
 
     var path = window.location.pathname.split('/'),
         href = "https://store.steampowered.com/explore/",
-        appid,
         reg_appid = /(?<=app\/)(\d+)/g,
         flag_inqueue = (typeof($('.next_in_queue_content')[0]) != "undefined");
 
@@ -36,26 +35,36 @@ function semiauto(){
                 createButton();
                 document.getElementById('next_button').addEventListener('click', function(){
                     var appid = document.getElementById("discovery_queue_start_link").href.match(/(?<=app\/)(\d+)/g,).toString();
-                    if(queue_length > 1){ // if any game behind exist
+                    nextAppInQueue(appid, href);
+                    /*if(queue_length > 1){ // if any game behind exist
                         var next_appid = $("div#discovery_queue")[0].childNodes[1].outerHTML.match(/(?<=apps\/)\d+/g),
                             next_url = "https://store.steampowered.com/app/" + next_appid + "/";
-                        nextAppInQueue(appid, next_url)
+                        nextAppInQueue(appid, next_url);
                     }
                     else{ // if at the end of queue
                         nextAppInQueue(appid, href);
-                    };
+                    };*/
                 });
             }
+            else{
+                var tmp = $("div.discover_queue_empty_refresh_btn")[0].getElementsByTagName("span")[0].click();
+                var t4 = setTimeout(location.reload(),3000)
+            };
             break;
         case 'app':
+            var flag_tmp = titleMark();
             if(flag_inqueue){ // current game in explore queue
-                appid = path[2];
-                if(titleMark()){
-                    nextAppInQueue(appid, $('#next_in_queue_form')[0].action); // semiauto process
+                if(flag_tmp){ // semiauto process
+                    try{
+                        $("#es_new_queue")[0].click();
+                    }
+                    catch(e){
+                        $("div.btn_next_in_queue_trigger")[0].click();
+                    };
                 }
             }
             else{ // or not
-                var t2 = setTimeout(backToExplore, 5000); // back to main page in 5 seconds
+                // var t2 = setTimeout(backToExplore, 5000); // back to main page in 5 seconds
             }
             break;
         case 'agecheck': // readability
@@ -96,7 +105,7 @@ function titleMark(){ // add prefix & suffix to title if u need
         title[0].innerHTML = "🀄️ " + title[0].innerText; // add emoji to prefix
         chinese_support = 1;
     }
-    if(((trade_card + chinese_support) < 1 || reviews_rate < 60 || release_year < 2010 /*|| flag_tag_ex*/) && !flag_tag_in && (release_year != 2020)){ // some rules by costomize
+    if(((trade_card + chinese_support) < 1 || reviews_rate < 60 || release_year < 2010 /*|| flag_tag_ex*/) && !flag_tag_in && (release_year < 2020)){ // some rules by costomize
         return true;
     }
     else{
@@ -125,12 +134,12 @@ function createButton() { // create button for nextAppInQueue at "https://store.
     var buttonContainerDiv = document.createElement('div');
     var buttonSpan = document.createElement('span');
 
-    buttonSpan.innerHTML = '移除并打开下一个';
+    buttonSpan.innerHTML = '移除当前游戏';
     buttonSpan.setAttribute('style', 'padding: 0 15% 0 15%; font-size: 15px; line-height: 64px; color: #ffcc6a; font-family: "Motiva Sans", Sans-serif; font-weight: 300;')
 
     buttonContainerDiv.setAttribute('id', 'next_button');
     buttonContainerDiv.setAttribute('class', 'next_in_queue_content');
-    buttonContainerDiv.setAttribute('style', 'background: url(/public/images/v6/app/queue_next_btn.png) top left no-repeat; width: 205px; height: 75px; cursor: pointer; background-size: 100% 200%; margin-bottom: -26px; margin-right: -72px; margin-top: -9px; float: right;');
+    buttonContainerDiv.setAttribute('style', 'background: url(/public/images/v6/app/queue_next_btn.png) top left no-repeat; width: 144px; height: 64px; cursor: pointer; background-size: 100% 200%; margin-bottom: -26px; margin-right: -72px; margin-top: -9px; float: right;');
 
     buttonContainerDiv.appendChild(buttonSpan);
 
