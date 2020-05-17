@@ -2,7 +2,7 @@
 // @name         Semiauto Steam Discovery Queue
 // @namespace    https://github.com/desc70865/Semiauto-Steam-Discovery-Queue
 // @icon         https://store.steampowered.com/favicon.ico
-// @version      0.1.3
+// @version      0.1.4
 // @description  something aid to accelerate steam discovery queue
 // @author       desc_inno
 // @match        https://store.steampowered.com/app/*
@@ -19,7 +19,10 @@
 })();
 
 function semiauto(){
-    if((/Failed to load queue|502 Bad Gateway/g).test(document.getElementsByTagName('html')[0].outerHTML)){ // may refresh can work better
+    var flag_error = (/Failed to load queue|502 Bad Gateway/g).test(document.getElementsByTagName('html')[0].outerHTML);
+    // 正则测试网页内容是否包含错误代码
+    // 首先判断是否加载错误,如遇到错误直接刷新,一般两三次即可恢复
+    if(flag_error){ // may refresh can work better
         window.location.reload(); // if error, refresh the page
     }
 
@@ -27,26 +30,20 @@ function semiauto(){
         href = "https://store.steampowered.com/explore/",
         reg_appid = /(?<=app\/)(\d+)/g,
         flag_inqueue = (typeof($('.next_in_queue_content')[0]) != "undefined");
-
+    // 根据路径选择分支
     switch(path[1]) { // switch by path name
         case 'explore':
             var queue_length = $("div#discovery_queue")[0].childNodes.length; // rest items in queue
+            // 检测队列剩余长度,如果仍有内容则添加按钮并等待用户操作
             if(queue_length > 0){
                 var button = createButton();
-                button.addEventListener('click', function(){
+                document.getElementById('remove_button').addEventListener('click', function(){
                     var appid = document.getElementById("discovery_queue_start_link").href.match(/(?<=app\/)(\d+)/g,).toString();
-                    nextAppInQueue(appid, href);
-                    // annotate after 0.1.2, consider of some Q have continuous demos
-                    /*if(queue_length > 1){ // if any game behind exist
-                        var next_appid = $("div#discovery_queue")[0].childNodes[1].outerHTML.match(/(?<=apps\/)\d+/g),
-                            next_url = "https://store.steampowered.com/app/" + next_appid + "/";
-                        nextAppInQueue(appid, next_url);
-                    }
-                    else{ // if at the end of queue
-                        nextAppInQueue(appid, href);
-                    };*/
+                    nextAppInQueue(appid, );
                 });
             }
+            // 否则尝试生成新队列
+            // 模拟点击生成按钮并刷新
             else{
                 var tmp = $("div.discover_queue_empty_refresh_btn")[0].getElementsByTagName("span")[0].click();
                 var t4 = setTimeout(window.location.reload(),3000)
@@ -54,12 +51,16 @@ function semiauto(){
             break;
         case 'app':
             var flag_tmp = titleMark();
+            // 在商店页首先运行标题修饰,返回过滤规则判断结果
+            // 可单独在商店页运行 titleMark() 作为独立功能
             if(flag_inqueue){ // current game in explore queue
+                // 如果该游戏在队列中
                 if(flag_tmp){ // semiauto process
-                    try{
+                    // 如果符合过滤器规则,开始自动下一个
+                    try{ // 尝试生成新队列 # 在队列末尾
                         $("#es_new_queue")[0].click();
                     }
-                    catch(e){
+                    catch(e){ // 正常打开下一个
                         $("div.btn_next_in_queue_trigger")[0].click();
                     };
                 }
@@ -69,7 +70,7 @@ function semiauto(){
             }
             break;
         case 'agecheck': // readability
-        default:
+        default: // 异常页面,返回主页
             var t3 = setTimeout(backToExplore, 1000);
             break;
     };
