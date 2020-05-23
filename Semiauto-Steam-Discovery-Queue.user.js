@@ -5,7 +5,7 @@
 // @namespace    https://github.com/desc70865/Semiauto-Steam-Discovery-Queue
 // @supportURL   https://github.com/desc70865/Semiauto-Steam-Discovery-Queue/issues
 // @updateURL    https://github.com/desc70865/Semiauto-Steam-Discovery-Queue/raw/master/Semiauto-Steam-Discovery-Queue.user.js
-// @version      0.1.5
+// @version      0.1.6
 // @icon         https://store.steampowered.com/favicon.ico
 // @match        https://store.steampowered.com/app/*
 // @match        https://store.steampowered.com/explore/*
