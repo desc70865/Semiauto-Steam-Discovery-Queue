@@ -1,17 +1,19 @@
 // ==UserScript==
 // @name         Semiauto Steam Discovery Queue
-// @namespace    https://github.com/desc70865/Semiauto-Steam-Discovery-Queue
-// @icon         https://store.steampowered.com/favicon.ico
-// @version      0.1.5
 // @description  something aid to accelerate steam discovery queue
 // @author       desc_inno
+// @namespace    https://github.com/desc70865/Semiauto-Steam-Discovery-Queue
+// @supportURL   https://github.com/desc70865/Semiauto-Steam-Discovery-Queue/issues
+// @updateURL    https://github.com/desc70865/Semiauto-Steam-Discovery-Queue/raw/master/Semiauto-Steam-Discovery-Queue.user.js
+// @version      0.1.5
+// @icon         https://store.steampowered.com/favicon.ico
 // @match        https://store.steampowered.com/app/*
 // @match        https://store.steampowered.com/explore/*
 // @match        https://store.steampowered.com/agecheck/*
 // @require      https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js
 // ==/UserScript==
 
-// set https://store.steampowered.com/account/languagepreferences both simplified & traditional chinese before use
+// default set https://store.steampowered.com/account/languagepreferences both simplified & traditional chinese before use
 
 (function() {
     'use strict';
